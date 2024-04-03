@@ -1,0 +1,216 @@
+{%load static%}
+{% load main_page_templates_tags %}
+{% load price_of_cart %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Start of Header -->
+        <header class="header">
+            <div class="header-top">
+                <div class="container">
+                    <div class="header-right pr-0">
+                        <div class="dropdown">
+                            <a href="#currency">تومان </a>
+                            <div class="dropdown-box">
+                                <a href="#USD">تومان </a>
+                                <a href="#EUR">دلار </a>
+                            </div>
+                        </div>
+                        <!-- End of DropDown Menu -->
+
+                        <div class="dropdown">
+                            <a href="#language"><img src="{%static 'assets/images/flags/eng.png'%}" alt="ENG Flag" width="14"
+                                    height="8" class="dropdown-image" /> تومان </a>
+                            <div class="dropdown-box">
+                                <a href="#ENG">
+                                    <img src="{%static 'assets/images/flags/eng.png'%}" alt="ENG Flag" width="14" height="8"
+                                        class="dropdown-image" />
+                                    فارسی    </a>
+                                <a href="#FRA">
+                                    <img src="{%static 'assets/images/flags/fra.png'%}" alt="FRA Flag" width="14" height="8"
+                                        class="dropdown-image" />
+                                   انگلیسی </a>
+                            </div>
+                        </div>
+                        <!-- End of Dropdown Menu -->
+                        <span class="divider d-lg-show"></span>
+                        <a href="blog.html" class="d-lg-show">وبلاگ </a>
+                        <a href="contact-us.html" class="d-lg-show">تماس با ما </a>
+                        <a href="{% url 'user:profile' %}" class="d-lg-show">حساب کاربری من </a>
+                        {% if request.user.email %}
+                        <a href="{% url 'user:logout' %}" class="d-lg-show"><i
+                                class="w-icon-account"></i>خروج  </a>
+                        {% else %}
+                        <a href="{% url 'user:login_register' %}" class="d-lg-show"><i
+                                class="w-icon-account"></i>ورود  </a>
+                        <span class="delimiter d-lg-show">/</span>
+                        <a href="{% url 'user:login_register' %}" class="ml-0 d-lg-show">ثبت نام </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- End of Header Top -->
+
+            <div class="header-middle">
+                <div class="container">
+                    <div class="header-left mr-md-4">
+                        <a href="{%url 'home'%}" class="mobile-menu-toggle  w-icon-hamburger">
+                        </a>
+                        <a href="{%url 'home'%}" class="logo ml-lg-0">
+                            <img src="{%static 'assets/images/demos/demo2/hlogo.png'%}" alt="logo" width="144" height="45" />
+                        </a>
+                        <nav class="main-nav">
+                            <ul class="menu">
+                                <li class="active">
+                                    <a href="{%url 'home'%}">صفحه اصلی </a>
+                                </li>
+                                <li>
+                                    <a href="shop-banner-sidebar.html">کلاب فروشندگان </a>
+                                </li>
+                                <li>
+                                    <a href="vendor-dokan-store.html">کلاب مشتریان </a>
+                                </li>
+                                <li>
+                                    <a href="blog.html">وبلاگ </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="header-right ml-4">
+                        <div class="header-call d-xs-show d-lg-flex align-items-center">
+                            <a href="tel:#" class="w-icon-call"></a>
+                            <div class="call-info d-xl-show">
+                                <h4 class="chat font-weight-normal font-size-md text-normal ls-normal text-light mb-0">
+                                    <a href="mailto:#" class="text-capitalize">چت زنده </a> یا :</h4>
+                                <a href="tel:#" class="phone-number font-weight-bolder ls-50">0(800)123-456</a>
+                            </div>
+                        </div>
+                        <a class="wishlist label-down link d-xs-show" href="wishlist.html">
+                            <i class="w-icon-heart"></i>
+                            <span class="wishlist-label d-lg-show">لیست علاقه مندیها </span>
+                        </a>
+                        <a class="compare label-down link d-xs-show" href="compare.html">
+                            <i class="w-icon-compare"></i>
+                            <span class="compare-label d-lg-show">مقایسه کردن </span>
+                        </a>
+                        <div class="dropdown cart-dropdown mr-0 mr-lg-2">
+                            <div class="cart-overlay"></div>
+                            <a href="{% url 'Payment:show_cart' %}" class="cart-toggle label-down link">
+                                <i class="w-icon-cart">
+                                    <span class="cart-count">{{cart|length}}</span>
+                                </i>
+                                <span class="cart-label">سبد خرید </span>
+                            </a>
+                            <div class="dropdown-box">
+                                <div class="products">
+                                    {% for product, detail in cart.items %}
+                                    <div class="product product-cart">
+                                        <div class="product-detail">
+                                            <a href="{% url 'product:product_detail' detail.3 %}" class="product-name">{{product}}</a>
+                                            <div class="price-box">
+                                                <span class="product-quantity">{{detail.0}}</span>
+                                                <span class="product-price">{{detail.2}}</span>
+                                            </div>
+                                        </div>
+                                        <figure class="product-media">
+                                            <a href="{% url 'product:product_detail' detail.3 %}">
+                                                <img src="{{detail.1}}" alt="product" height="84"
+                                                    width="94" />
+                                            </a>
+                                        </figure>
+                                        <button class="btn btn-link btn-close">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% sum_of_cart cart as cart_price %}
+                                <div class="cart-total">
+                                    <label>مجموع کل: </label>
+                                    <span class="price">{{cart_price}} تومان</span>
+                                </div>
+
+                                <div class="cart-action">
+                                    <a href="{% url 'Payment:show_cart' %}" class="btn btn-dark btn-outline btn-rounded">نمایش سبد </a>
+                                    <a href="{% url 'Payment:checkout' %}" class="btn btn-primary  btn-rounded">پرداخت </a>
+                                </div>
+                            </div>
+                            <!-- End of Dropdown Box -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Header Middle -->
+
+            <div class="header-bottom sticky-content fix-top sticky-header">
+                <div class="container">
+                    <div class="inner-wrap">
+                        <div class="header-left flex-1">
+                            <div class="dropdown category-dropdown has-border" data-visible="true">
+                                <a href="#" class="category-toggle" role="button" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="true" data-display="static"
+                                    title="جستجوی دسته بندیها">
+                                    <i class="w-icon-category"></i>
+                                    <span>کاووش دسته بندیها </span>
+                                </a>
+
+                                <div class="dropdown-box">
+                                    <ul class="menu vertical-menu category-menu">
+                                    {% for category in p_category %}
+                                        <li>
+                                            <a href="#">
+                                                <i class="w-icon-home"></i>{{category.name}}
+                                            </a>
+                                            <ul class="megamenu">
+                                                {% get_sub_cat category as sub_categorys%}
+                                                {% for sub_category in sub_categorys %}
+                                                <li>
+                                                    <h4 class="menu-title">{{sub_category.name}}</h4>
+                                                    <hr class="divider">
+                                                    {% get_sub_cat sub_category as sub_sub_categorys%}
+                                                    <ul>
+                                                        {% for sub_sub_category in sub_sub_categorys %}
+                                                            <li><a href="{% url 'product:product_list' sub_sub_category.name %}">{{sub_sub_category.name}}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {%endfor%}                                        
+                                    </ul>
+                                        
+                                </div>
+                            </div>
+                            <form method="get" action="{% url 'product:search' %}" class="header-search hs-expanded hs-round d-none d-md-flex input-wrapper mr-4 ml-4">
+                                <div class="select-box">
+                                    <select id="category" name="category">
+                                        <option value="">تمام دسته بندی ها</option>
+                                        {% for category in p_category %}
+                                        <option value="{{category.name}}">{{category.name}} </option>
+                                        {%endfor%}
+                                    </select>
+                                </div>
+                                <input type="text" class="form-control" name="search" id="search"
+                                    placeholder="جستجو ..." required />
+                                <button class="btn btn-search" type="submit"><i class="w-icon-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="header-right pr-0 ml-4">
+                            <a href="#" class="d-xl-show mr-6"><i class="w-icon-map-marker mr-1"></i>پیگیری سفارش</a>
+                            <a href="#"><i class="w-icon-sale"></i>فروش ویژه </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- End of Header -->
+</body>
+</html>

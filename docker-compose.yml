@@ -1,0 +1,75 @@
+version: "3.7"
+
+services:
+
+  django_web:
+    build: .
+    command: >
+      ash -c "python manage.py migrate && gunicorn Online_Store_Shop.wsgi:application --bind 0.0.0.0:8003"
+    volumes:
+      - static:/app/static
+      - media:/app/media
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres_db
+      - rabbitmq
+  postgres_db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=online_store_shop_db
+  nginx:
+    build: ./nginx
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    ports:
+      - 8003:80
+    depends_on:
+      - django_web
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_val:/data
+  celery:
+    restart: always
+    image: online_store_shop_django_web
+    command: >
+      ash -c "touch celery.log && celery -A Online_Store_Shop worker -l info &> celery.log"
+    volumes:
+      - .:/app
+    depends_on:
+      - django_web
+      - redis
+  mongodb:
+    image: mongo:5.0
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+  discount_code_app:
+    build: discountcode_app/
+    command: >
+      ash -c "uvicorn discountcode_app.views:app --reload && python receiver.py "
+    depends_on:
+      - mongodb
+      - rabbitmq
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    volumes:
+      - rabbit_data:/bitnami
+volumes:
+  postgres_data:
+  static:
+  media:
+  redis_val:
+  rabbit_data:
+  mongodb_data:
